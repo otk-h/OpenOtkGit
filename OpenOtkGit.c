@@ -52,8 +52,6 @@ void Git_Add(const char* path) {
 
     copy_file(path, blob_path);
 
-    // TODO
-
     printf("Git_Add: finish\n\n");
 }
 
@@ -86,7 +84,7 @@ static void copy_file(const char* src, const char* dst) {
     if ((src_fd = fopen(src, "rb")) == NULL) { goto error; }
     if ((dst_fd = fopen(dst, "wb")) == NULL) { goto error; }
 
-    while (bytes_read = fread(buf, 1, sizeof(buf), src_fd) > 0) {
+    while ((bytes_read = fread(buf, 1, sizeof(buf), src_fd)) > 0) {
         if (fwrite(buf, 1, bytes_read, dst_fd) != bytes_read) {
             goto error;
         }
