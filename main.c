@@ -25,6 +25,15 @@ int main(int argc, char* argv[]) {
             case 'c':
                 Git_Commit(optarg);
                 return 0;
+            case 'b':
+                Git_Branch(optarg);
+                return 0;
+            case 'o':
+                Git_Checkout(optarg);
+                return 0;
+            case 'm':
+                Git_Merge();
+                return 0;
             default:
                 return 1;
         }
