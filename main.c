@@ -34,6 +34,9 @@ int main(int argc, char* argv[]) {
             case 'm':
                 Git_Merge();
                 return 0;
+            case 'r':
+                Git_Rebase();
+                return 0;
             default:
                 return 1;
         }

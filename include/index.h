@@ -8,7 +8,7 @@
 
 typedef struct index_hdr {
     uint32_t magic;     // "DIRC"
-    uint32_t entry_cnt;
+    uint32_t entry_cnt; // cnt of entry
 } index_hdr_t;
 
 // unsorted
@@ -31,5 +31,12 @@ typedef struct index_entry {
     char path[64];      // TODO: fixed len
     
 } index_entry_t;
+
+typedef struct index {
+    index_hdr_t     ihdr;
+    index_entry_t*  entry;
+} index_t;
+
+int get_index(index_t* index);
 
 #endif

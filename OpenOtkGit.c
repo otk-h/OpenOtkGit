@@ -50,8 +50,8 @@ void Git_Init() {
 
 void Git_Add(const char* path) {
     struct stat st;
-    if (stat(path, &st) == -1
-        || is_Initialized() == 0
+    if (is_Initialized() == 0
+        || stat(path, &st) == -1
     ) {
         perror(NULL);
         exit(1);
@@ -67,17 +67,22 @@ void Git_Add(const char* path) {
 }
 
 void Git_Commit(const char* message) {
-    // struct stat st;
-    // if (stat(GIT_INDEX_PATH, &st) == -1
-    //     || st.st_size <= sizeof(index_t)
-    //     || !is_Initialized()
-    // ) {
-    //     perror("nothing to commit");
-    //     exit(1);
-    // }
+    struct stat st;
+    if (is_Initialized() == 0
+        || stat(GIT_INDEX_PATH, &st) == -1
+        || st.st_size <= sizeof(index_hdr_t)
+    ) {
+        perror(NULL);
+        exit(1);
+    }
 
-    // printf("123\n");
-    // // TODO
+    index_t* index = malloc(sizeof(index_t));
+    get_index(index);
+
+    // TODO
+
+    free(index->entry);
+    free(index);
 
 }
 
@@ -95,6 +100,12 @@ void Git_Checkout(const char* branch_name) {
 
 void Git_Merge() {
     printf("Git_Merge: \n\n");
+
+    // TODO
+}
+
+void Git_Rebase() {
+    printf("Git_Rebase: \n\n");
 
     // TODO
 }
@@ -140,36 +151,5 @@ static int Git_Add_create_blob(const char* file_path, const char* blob_path) {
 }
 
 static int Git_Add_update_index(const char* file_path, const char* blob_path) {
-    // struct stat st;
-    // if (stat(file_path, &st) == -1) {
-    //     perror(NULL);
-    //     return 0;
-    // }
     
-    // uint64_t file_sz = st.st_size;
-
-    // index_t ihdr = {0};
-    // blob_t bhdr = {0};
-
-    // bhdr.magic = BLOB_MAGIC;
-    // bhdr.size = file_sz;
-    // memcpy(bhdr.file_path, file_path, strlen(file_path));
-    // memcpy(bhdr.blob_path, blob_path, strlen(blob_path));
-    // bhdr.file_path[strlen(file_path)] = '\0';
-    // bhdr.blob_path[strlen(blob_path)] = '\0';
-
-    // FILE* fd = NULL;
-    // fd = fopen(GIT_INDEX_PATH, "rb+");
-    // fseek(fd, 0, SEEK_SET);
-    // fread(&ihdr, sizeof(ihdr), 1, fd);
-    // ihdr.entry_cnt += 1;
-
-    // fseek(fd, 0, SEEK_SET);
-    // fwrite(&ihdr, sizeof(ihdr), 1 , fd);
-    // fseek(fd, 0, SEEK_END);
-    // fwrite(&bhdr, sizeof(bhdr), 1, fd);
-
-    // fclose(fd);
-
-    // return 1;
 }
