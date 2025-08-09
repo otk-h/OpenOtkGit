@@ -1,10 +1,22 @@
 CC = gcc
-src = main.c OpenOtkGit.c
+CFLAGS = -I./include
+
+SRC = $(wildcard *.c)
+OBJ = $(SRC:.c=.o)
 target = OpenOtkGit
 
-$(target): $(src)
-	$(CC) $(src) -o $(target)
+all: $(target) clean_objs
+
+$(target): $(OBJ)
+	$(CC) $(OBJ) -o $(target) $(CFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean_objs:
+	rm -f $(OBJ)
 
 clean:
 	rm -f $(target)
+	rm -f $(OBJ)
 	rm -f -r "./.OpenOtkGit"
