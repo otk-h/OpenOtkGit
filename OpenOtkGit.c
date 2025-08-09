@@ -50,6 +50,9 @@ void Git_Init() {
 
 void Git_Add(const char* path) {
     struct stat st;
+    // TODO: if dir, do nothing
+    // TODO: add a tracked deleted file, delete from index
+    //       or rm <filename>
     if (is_Initialized() == 0
         || stat(path, &st) == -1
     ) {
