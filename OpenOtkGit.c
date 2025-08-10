@@ -50,6 +50,7 @@ void Git_Init() {
 
 void Git_Add(const char* path) {
     struct stat st;
+    // TODO: "./"
     // TODO: if dir, do nothing
     // TODO: add a tracked deleted file, delete from index
     //       or rm <filename>
@@ -62,7 +63,7 @@ void Git_Add(const char* path) {
 
     char hash[HASH_LENGTH + 1];
     if (create_blob(path, hash)
-        && update_index(path, hash)
+        && add_entry_to_index(path, hash)
     ) {
         printf("Git_Add: finish\n\n");
     }
@@ -82,6 +83,8 @@ void Git_Commit(const char* message) {
     index_t* index = malloc(sizeof(index_t));
     get_index(index);
 
+    char hash[41];
+    create_tree(index, ".", hash);
     // TODO
 
     free(index->entry);

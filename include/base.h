@@ -21,5 +21,6 @@
 
 void calculate_sha1(const char* path, char* hash);
 int is_Initialized();
+int get_entry_name(const char* path, const char* dir_path, char* name);
 
 #endif

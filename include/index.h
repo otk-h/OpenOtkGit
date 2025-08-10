@@ -38,5 +38,6 @@ typedef struct index {
 } index_t;
 
 int get_index(index_t* index);
+int add_entry_to_index(const char* path, char* hash);
 
 #endif

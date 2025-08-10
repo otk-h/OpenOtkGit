@@ -30,7 +30,7 @@ typedef struct tree {
 } tree_t;
 
 int create_tree(index_t* index, const char* dir_path, char* hash);
-int is_tree_in_dir(const char* path, const char* dir_path);
+int is_file_in_dir(const char* path, const char* dir_path);
 int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t* tree);
 
 #endif

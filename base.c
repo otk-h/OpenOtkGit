@@ -26,3 +26,25 @@ int is_Initialized() {
     }
     return 1;
 }
+
+int get_entry_name(const char* path, const char* dir_path, char* name) {
+    if (path == NULL || dir_path == NULL || name == NULL) { return 0; }
+    size_t dir_len = strlen(dir_path);
+
+    const char* remaining = path + dir_len;
+    if (*remaining != '/') { return 0; }
+
+    remaining++;
+    const char* end = strchr(remaining, '/');
+    size_t name_len = 0;
+    if (end == NULL) {
+        name_len = strlen(remaining);
+    } else {
+        name_len = end - remaining;
+    }
+
+    strncpy(name, remaining, name_len);
+    name[name_len] = '\0';
+    return 1;
+
+}
