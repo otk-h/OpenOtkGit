@@ -1,11 +1,5 @@
 #include "OpenOtkGit.h"
 
-static void copy_file(const char* src, const char* dst);
-static int Git_Add_create_blob(const char* file_path, const char* blob_path);
-static int Git_Add_update_index(const char* file_path, const char* blob_path);
-
-// --- main func ---
-
 void Git_Version() {
     printf("OpenOtkGit version\n\n");
 }
@@ -27,18 +21,27 @@ void Git_Init() {
     sprintf(rm_cmd, "rm -rf %s", GIT_DIR);
     system(rm_cmd);
 
-    FILE* fd = NULL;
     index_hdr_t ihdr;
     ihdr.magic = INDEX_MAGIC;
     ihdr.entry_cnt = 0;
 
+    head_t head;
+    memset(&head, 0, sizeof(head));
+    snprintf((char*)&head, sizeof(head), "%s%s", DEFAULT_HEAD_STR, DEFAULT_BRANCH);
+
+    FILE* fd = NULL;
+
     if (mkdir(GIT_DIR, 0755) == -1
         || mkdir(GIT_OBJECTS_DIR, 0755) == -1
-    //     || mkdir(GIT_REFS_DIR, 0755) == -1
+        || mkdir(GIT_REFS_DIR, 0755) == -1
+        || mkdir(GIT_REFS_HEADS_DIR, 0755) == -1
+        // index
         || (fd = fopen(GIT_INDEX_PATH, "w")) == NULL
-        || fwrite(&ihdr, 1, sizeof(ihdr), fd) != sizeof(fd)
+        || fwrite(&ihdr, 1, sizeof(ihdr), fd) != sizeof(ihdr)
         || fclose(fd) != 0
+        // HEAD
         || (fd = fopen(GIT_HEAD_PATH, "w")) == NULL
+        || fwrite(&head, 1, sizeof(head), fd) != sizeof(head)
         || fclose(fd) != 0
     ) {
         perror(NULL);
@@ -50,12 +53,12 @@ void Git_Init() {
 
 void Git_Add(const char* path) {
     struct stat st;
-    // TODO: "./"
-    // TODO: if dir, do nothing
     // TODO: add a tracked deleted file, delete from index
     //       or rm <filename>
     if (is_Initialized() == 0
+        || strncmp(path, "./", strlen("./")) != 0
         || stat(path, &st) == -1
+        || S_ISDIR(st.st_mode)
     ) {
         perror(NULL);
         exit(1);
@@ -83,9 +86,13 @@ void Git_Commit(const char* message) {
     index_t* index = malloc(sizeof(index_t));
     get_index(index);
 
-    char hash[41];
-    create_tree(index, ".", hash);
-    // TODO
+    char tree_hash[HASH_LENGTH + 1];
+    char commit_hash[HASH_LENGTH + 1];
+    if (create_tree(index, ".", tree_hash)
+        && create_commit(message, tree_hash, commit_hash)
+    ) {
+        printf("Git_Commit: finish\n\n");
+    }
 
     free(index->entry);
     free(index);
@@ -114,48 +121,4 @@ void Git_Rebase() {
     printf("Git_Rebase: \n\n");
 
     // TODO
-}
-
-// --- assist func ---
-
-
-
-static void copy_file(const char* src, const char* dst) {
-//     FILE* src_fd = NULL;
-//     FILE* dst_fd = NULL;
-//     char buf[4096];
-//     size_t bytes_read;
-
-//     if ((src_fd = fopen(src, "rb")) == NULL) { goto error; }
-//     if ((dst_fd = fopen(dst, "wb")) == NULL) { goto error; }
-
-//     while ((bytes_read = fread(buf, 1, sizeof(buf), src_fd)) > 0) {
-//         if (fwrite(buf, 1, bytes_read, dst_fd) != bytes_read) {
-//             goto error;
-//         }
-//     }
-
-//     fclose(src_fd);
-//     fclose(dst_fd);
-//     return;
-// error:
-    // perror(NULL);
-    // if (src_fd != NULL) { fclose(src_fd); }
-    // if (dst_fd != NULL) { fclose(dst_fd); }
-    // exit(1);
-}
-
-static int Git_Add_create_blob(const char* file_path, const char* blob_path) {
-    // struct stat st;
-    // if (stat(blob_path, &st) != -1) {
-    //     printf("Git_Add: file exist\n\n");
-    //     return 0;
-    // }
-
-    // copy_file(file_path, blob_path);
-    // return 1;
-}
-
-static int Git_Add_update_index(const char* file_path, const char* blob_path) {
-    
 }

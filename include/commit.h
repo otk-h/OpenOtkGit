@@ -2,6 +2,7 @@
 #define __COMMIT_H__
 
 #include "base.h"
+#include "ref.h"
 
 typedef struct commit {
     char tree_hash[41];     // point to top tree obj
@@ -23,6 +24,6 @@ typedef struct commit {
 
 } commit_t;
 
-int create_commit();
+int create_commit(const char* message, const char* tree_hash, char* commit_hash);
 
 #endif

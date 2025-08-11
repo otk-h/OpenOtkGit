@@ -4,6 +4,7 @@
 #include "index.h"
 #include "blob.h"
 #include "tree.h"
+#include "commit.h"
 
 static struct option global_options[] = {
     {"version", no_argument,        0, 'V'},
