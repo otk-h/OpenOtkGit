@@ -24,6 +24,7 @@ typedef struct commit {
 
 } commit_t;
 
+int set_parent_commit(commit_t* commit);
 int create_commit(const char* message, const char* tree_hash, char* commit_hash);
 
 #endif

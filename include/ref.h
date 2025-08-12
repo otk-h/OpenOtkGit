@@ -16,6 +16,8 @@ typedef struct ref_head {
     char hash[41];
 } ref_head_t;
 
+int get_cur_branch(char* branch_name);
+int update_refs(char* hash);
 int is_hash();
 
 #endif

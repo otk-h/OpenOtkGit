@@ -90,6 +90,7 @@ void Git_Commit(const char* message) {
     char commit_hash[HASH_LENGTH + 1];
     if (create_tree(index, ".", tree_hash)
         && create_commit(message, tree_hash, commit_hash)
+        && update_refs(commit_hash)
     ) {
         printf("Git_Commit: finish\n\n");
     }
