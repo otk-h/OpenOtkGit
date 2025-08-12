@@ -101,15 +101,34 @@ void Git_Commit(const char* message) {
 }
 
 void Git_Branch(const char* branch_name) {
-    printf("Git_Branch: %s\n\n", branch_name);
-    
     // TODO
+    printf("Git_Branch: \n");
+    
+    if (branch_name == NULL) {
+        // list refs/heads
+    } else {
+        // create new refs/heads
+        // content = HEAD ptr hash
+    }
+
+    // -d <branch-name>
 }
 
 void Git_Checkout(const char* branch_name) {
-    printf("Git_Checkout: %s\n\n", branch_name);
-
+    if (branch_name == NULL) { return; }
     // TODO
+    printf("Git_Checkout: %s\n\n", branch_name);
+    
+    // update HEAD
+    // content = ref: refs/heads/<branch-name>
+
+    // get tree hash
+    // traverse tree and blob
+
+    // write & create
+
+    // clear index
+
 }
 
 void Git_Merge() {

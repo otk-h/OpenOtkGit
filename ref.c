@@ -33,38 +33,15 @@ int update_refs(char* hash) {
 
 }
 
-int is_hash() {
-    // TODO
-    int fd = -1;
-    fd = open(GIT_HEAD_PATH, O_RDONLY);
+// int is_hash() {
+//     // TODO
+//     int fd = -1;
+//     fd = open(GIT_HEAD_PATH, O_RDONLY);
 
-    char buffer[64];
-    read(fd, buffer, sizeof(buffer));
+//     char buffer[64];
+//     read(fd, buffer, sizeof(buffer));
 
-    close(fd);
-
-    return strncmp(buffer, DEFAULT_HEAD_STR, strlen(DEFAULT_HEAD_STR));
-}
-
-// // 更新 HEAD 指向新的 Commit SHA-1
-// void update_head_ref(unsigned char *sha1) {
-//     int fd = open(".git/HEAD", O_WRONLY | O_TRUNC);
-//     if (fd == -1) return;
-
-//     char ref[64];
-//     snprintf(ref, sizeof(ref), "ref: refs/heads/main\n"); // 简化：假设分支是 main
-//     write(fd, ref, strlen(ref));
 //     close(fd);
 
-//     // 更新分支引用文件（如 .git/refs/heads/main）
-//     char branch_path[PATH_MAX];
-//     snprintf(branch_path, sizeof(branch_path), ".git/refs/heads/main");
-//     fd = open(branch_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-//     if (fd == -1) return;
-
-//     char sha1_hex[41];
-//     for (int i = 0; i < 20; i++) sprintf(sha1_hex + 2 * i, "%02x", sha1[i]);
-//     write(fd, sha1_hex, 40);
-//     write(fd, "\n", 1);
-//     close(fd);
+//     return strncmp(buffer, DEFAULT_HEAD_STR, strlen(DEFAULT_HEAD_STR));
 // }
