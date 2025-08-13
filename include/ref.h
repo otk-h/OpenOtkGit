@@ -17,6 +17,7 @@ typedef struct ref_head {
 } ref_head_t;
 
 int get_cur_branch(char* branch_name);
+int get_commit_hash(char* hash);
 int update_refs(char* hash);
 int is_detached();
 

@@ -43,3 +43,22 @@ int is_detached() {
 
     return (strncmp(buffer, DEFAULT_HEAD_STR, strlen(DEFAULT_HEAD_STR)) != 0);
 }
+
+int get_commit_hash(char* hash) {
+    // if (hash == NULL) { return 0; }
+
+    // char branch_name[64];
+    // get_cur_branch(branch_name);
+
+    // if (is_detached()) {
+
+    // } else {
+    //     get_cur_branch(cur_branch);
+
+    // }
+
+    // // TODO
+
+    return 1;
+
+}

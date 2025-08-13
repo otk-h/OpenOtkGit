@@ -19,7 +19,7 @@ void Git_Checkout(int argc, char* argv[]);
 // void Git_Status(int argc, char* argv[]);
 // void Git_Log(int argc, char* argv[]);
 // void Git_Merge(int argc, char* argv[]);
-// void Git_Rebase();
+// void Git_Rebase(int argc, char* argv[]);
 
 // static struct option help_options[] = {
 //     {0, 0, 0, 0}
@@ -79,14 +79,14 @@ static struct option branch_options[] = {
 //     {0, 0, 0, 0}
 // };
 
-// static struct option checkout_option[] = {
-//     {"branch",  required_argument, 0, 'b'}, // create and switch
-//     {"Branch",  required_argument, 0, 'B'}, // create, reset and switch
-//     {"orphan",  required_argument, 0, 'o'}, // create isolated branch
-//     {"force",   no_argument,       0, 'f'},
-//     // -- <file>, track, ...
-//     {0, 0, 0, 0}
-// };
+static struct option checkout_option[] = {
+    {"branch",  required_argument, 0, 'b'}, // create and switch
+    // {"Branch",  required_argument, 0, 'B'}, // create, reset and switch
+    // {"orphan",  required_argument, 0, 'o'}, // create isolated branch
+    // {"force",   no_argument,       0, 'f'},
+    // // -- <file>, track, ...
+    {0, 0, 0, 0}
+};
 
 // static struct option merge_option[] = {
 //     {0, 0, 0, 0}
