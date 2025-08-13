@@ -14,10 +14,10 @@ void Git_Help(int argc, char* argv[]);
 void Git_Init(int argc, char* argv[]);
 void Git_Add(int argc, char* argv[]);
 void Git_Commit(int argc, char* argv[]);
+void Git_Branch(int argc, char* argv[]);
+void Git_Checkout(int argc, char* argv[]);
 // void Git_Status(int argc, char* argv[]);
 // void Git_Log(int argc, char* argv[]);
-// void Git_Branch(int argc, char* argv[]);
-// void Git_Checkout(int argc, char* argv[]);
 // void Git_Merge(int argc, char* argv[]);
 // void Git_Rebase();
 
@@ -52,6 +52,19 @@ static struct option commit_options[] = {
     {0, 0, 0, 0}
 };
 
+static struct option branch_options[] = {
+//     {"all",         no_argument,        0, 'a'},
+//     {"remote",      no_argument,        0, 'r'},
+    {"delte",       required_argument,  0, 'd'},
+    // -D
+//     {"move",        required_argument,  0, 'm'},
+//     {"copy",        required_argument,  0, 'c'},
+//     {"list",        no_argument,        0, 'l'},
+//     {"show-current",no_argument,        0, 's'},
+//     // contains, no-contains, ...
+    {0, 0, 0, 0}
+};
+
 // static struct option status_options[] = {
 //     {"short",   no_argument, 0, 's'},
 //     {"branch",  no_argument, 0, 'b'},
@@ -63,19 +76,6 @@ static struct option commit_options[] = {
 //     {"max-count",   required_argument,  0, 'n'},
 //     {"patch",       no_argument,        0, 'p'},
 //     // oneline, graph, decorate, author, grep, stat, since, after, until, before, ...
-//     {0, 0, 0, 0}
-// };
-
-// static struct option branch_options[] = {
-//     {"all",         no_argument,        0, 'a'},
-//     {"remote",      no_argument,        0, 'r'},
-//     {"delte",       required_argument,  0, 'd'},
-//     // -D
-//     {"move",        required_argument,  0, 'm'},
-//     {"copy",        required_argument,  0, 'c'},
-//     {"list",        no_argument,        0, 'l'},
-//     {"show-current",no_argument,        0, 's'},
-//     // contains, no-contains, ...
 //     {0, 0, 0, 0}
 // };
 

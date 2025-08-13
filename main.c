@@ -19,9 +19,9 @@ int main(int argc, char* argv[]) {
     } else if (strcmp(cmd, "commit") == 0) {
         Git_Commit(argc-1, argv+1);
     } else if (strcmp(cmd, "branch") == 0) {
-        // Git_Branch(argc-1, argv+1);
+        Git_Branch(argc-1, argv+1);
     } else if (strcmp(cmd, "checkout") == 0) {
-        // Git_Checkout(argc-1, argv+1);
+        Git_Checkout(argc-1, argv+1);
     } else if (strcmp(cmd, "merge") == 0) {
 
     } else if(strcmp(cmd, "rebase") == 0) {

@@ -80,7 +80,7 @@ void Git_Add(int argc, char* argv[]) {
     char* path = argv[1];
     struct stat st;
 
-    if (argc <= 0) { 
+    if (argc < 2) { 
         printf("Nothing specified, nothing added.\n");
         return;
     } else if (is_Initialized() == 0) {
@@ -105,14 +105,13 @@ void Git_Add(int argc, char* argv[]) {
         return;
     }
 
-
 }
 
 void Git_Commit(int argc, char* argv[]) {
     struct stat st;
     stat(GIT_INDEX_PATH, &st);
 
-    if (argc <= 0) { 
+    if (argc < 2) { 
         printf("Aborting commit due to empty commit message.\n");
         return;
     } else if (is_Initialized() == 0) {
@@ -153,58 +152,66 @@ void Git_Commit(int argc, char* argv[]) {
 
 }
 
-// void Git_Branch(const char* branch_name) {
-//     // TODO
-//     printf("Git_Branch: %s\n", branch_name);
+void Git_Branch(int argc, char* argv[]) {
 
-//     if (branch_name == NULL) {
-//         // list refs/heads
-//         DIR* dir = opendir(GIT_REFS_HEADS_DIR);
-//         if (dir == NULL) { return; }
-//         struct dirent* entry;
-//         while ((entry = readdir(dir)) != NULL) {
-//             if (strcmp(entry->d_name, ".") == 0
-//                 || strcmp(entry->d_name, "..") == 0
-//             ) { continue; }
-//             printf("%s\n", entry->d_name);
-//         }
-//     } else {
-//         // create new refs/heads
-//         char new_heads_path[64];
-//         snprintf(new_heads_path, sizeof(new_heads_path), "%s/%s", GIT_REFS_HEADS_DIR, branch_name);
-//         int fd = -1;
-//         fd = open(new_heads_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (is_Initialized() == 0) {
+        printf("Not initialized.\n");
+        return;
+    } else if (argc < 2) { 
+        DIR* dir = opendir(GIT_REFS_HEADS_DIR);
+        if (dir == NULL) { return; }
+        struct dirent* entry;
+        int branch_cnt = 0;
+        while ((entry = readdir(dir)) != NULL) {
+            if (strcmp(entry->d_name, ".") == 0
+                || strcmp(entry->d_name, "..") == 0
+            ) { continue; }
+            printf("%s\n", entry->d_name);
+            branch_cnt += 1;
+        }
+        if (branch_cnt == 0) {
+            printf("No local branch found.\n");
+        }
+        return;
+    }
 
-//         if (is_detached()) {
-//             // write HEAD to new branch
-//         } else {
-//             // get branch name
-//             // write hash to new branch
-//         }
+    int opt = -1;
+    if ((opt = getopt_long(argc, argv, "d:", commit_options, NULL)) != -1) {
+        switch (opt) {
+            case 'd':
+                char* branch_name = optarg;
+                char branch_path[128];
+                snprintf(branch_path, sizeof(branch_path), "%s/%s", GIT_REFS_HEADS_DIR, branch_name);
+                struct stat st;
+                if (stat(branch_path, &st) == -1) {
+                    printf("branch %s not found.\n", branch_name);
+                } else {
+                    remove(branch_path);
+                    printf("branch %s removed.\n", branch_name);
+                }
+                return;
+            default: 
+                return;
+        }
+    }
 
-//         close(fd);
+}
 
-//     }
-
-//     // -d <branch-name>
-// }
-
-// void Git_Checkout(const char* branch_name) {
-//     if (branch_name == NULL) { return; }
-//     // TODO
-//     printf("Git_Checkout: %s\n\n", branch_name);
+void Git_Checkout(int argc, char* argv[]) {
+    // TODO
+    printf("Git_Checkout:\n");
     
-//     // update HEAD
-//     // content = ref: refs/heads/<branch-name>
+    // update HEAD
+    // content = ref: refs/heads/<branch-name>
 
-//     // get tree hash
-//     // traverse tree and blob
+    // get tree hash
+    // traverse tree and blob
 
-//     // write & create
+    // write & create
 
-//     // clear index
+    // clear index
 
-// }
+}
 
 // void Git_Merge() {
 //     printf("Git_Merge: \n\n");
