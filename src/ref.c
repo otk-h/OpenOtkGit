@@ -33,15 +33,13 @@ int update_refs(char* hash) {
 
 }
 
-// int is_hash() {
-//     // TODO
-//     int fd = -1;
-//     fd = open(GIT_HEAD_PATH, O_RDONLY);
+int is_detached() {
+    int fd = -1;
+    fd = open(GIT_HEAD_PATH, O_RDONLY);
 
-//     char buffer[64];
-//     read(fd, buffer, sizeof(buffer));
+    char buffer[64];
+    read(fd, buffer, sizeof(buffer));
+    close(fd);
 
-//     close(fd);
-
-//     return strncmp(buffer, DEFAULT_HEAD_STR, strlen(DEFAULT_HEAD_STR));
-// }
+    return (strncmp(buffer, DEFAULT_HEAD_STR, strlen(DEFAULT_HEAD_STR)) != 0);
+}

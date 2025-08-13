@@ -7,14 +7,13 @@ int create_tree(index_t* index, const char* dir_path, char* hash) {
 }
 
 int create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_processed) {
-    tree_t* tree = malloc(sizeof(tree_hdr_t) + sizeof(tree_entry_t));
+    tree_t* tree = malloc(sizeof(tree_hdr_t));
 
     if (hash == NULL || dir_path == NULL || index == NULL || tree == NULL) { return 0; }
 
     tree->thdr.magic = TREE_MAGIC;
     tree->thdr.entry_cnt = 0;
 
-    // TODO: slow
     for (int i = 0; i < index->ihdr.entry_cnt; i++) {
         index_entry_t* entry = &index->entry[i];
         struct stat st;
@@ -34,9 +33,9 @@ int create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_p
         if (S_ISDIR(st.st_mode)) {
             char sub_hash[41] = {0};
             create_tree_func(index, path, sub_hash, is_processed);
-            add_entry_to_tree(name, sub_hash, st, tree);
+            add_entry_to_tree(name, sub_hash, st, &tree);
         } else if (S_ISREG(st.st_mode)) {
-            add_entry_to_tree(name, entry->hash, st, tree);
+            add_entry_to_tree(name, entry->hash, st, &tree);
         }
 
         is_processed[i] = 1;
@@ -68,23 +67,24 @@ int is_file_in_dir(const char* path, const char* dir_path) {
     return 0;
 }
 
-int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t* tree) {
+int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t** tree) {
     if (name == NULL || hash == NULL || tree == NULL) { return 0; }
     
-    tree_t* new_tree = realloc(tree, sizeof(tree) + sizeof(tree_entry_t));
+    size_t new_tree_size = sizeof(tree_hdr_t) + ((*tree)->thdr.entry_cnt + 1) * sizeof(tree_entry_t);
+    tree_t* new_tree = realloc(*tree, new_tree_size);
     if (new_tree == NULL) { return 0; }
 
-    tree = new_tree;
-    int idx = tree->thdr.entry_cnt;
-    memset(&tree->entry[idx], 0, sizeof(tree_entry_t));
-    tree->entry[idx].mode = st.st_mode;
-    memcpy(tree->entry[idx].name, name, strlen(name));
-    memcpy(tree->entry[idx].hash, hash, strlen(hash));
+    *tree = new_tree;
+    int idx = (*tree)->thdr.entry_cnt;
+    memset(&(*tree)->entry[idx], 0, sizeof(tree_entry_t));
+    (*tree)->entry[idx].mode = st.st_mode;
+    memcpy((*tree)->entry[idx].name, name, strlen(name));
+    memcpy((*tree)->entry[idx].hash, hash, strlen(hash));
 
     // // DEBUG
     // printf("add: %s\n", tree->entry[idx].name);
 
-    tree->thdr.entry_cnt += 1;
+    (*tree)->thdr.entry_cnt += 1;
 
     return 0;
 }

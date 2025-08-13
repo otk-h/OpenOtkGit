@@ -9,7 +9,7 @@ typedef struct commit {
     char parent_hash[4][41];// point to parent commit obj, TODO: limited parent
     char parent_cnt;        // cnt of parent
 
-    // char author[64];     // TODO
+    // char author[64];     // TODO: fixed len
     char message[64];       // TODO: fixed len
 
     // char* author_name;

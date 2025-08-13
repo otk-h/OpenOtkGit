@@ -1,45 +1,34 @@
-#include <stdio.h>
 #include "OpenOtkGit.h"
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        Git_Help();
+        Git_Help(argc-1, argv+1);
         return 0;
     }
 
-    int opt;
-    if ((opt = getopt_long(argc, argv, "Vhia:c:", global_options, NULL)) != -1) {
-        switch(opt) {
-            case 'V':
-                Git_Version();
-                return 0;
-            case 'h':
-                Git_Help();
-                return 0;
-            case 'i':
-                Git_Init();
-                return 0;
-            case 'a':
-                Git_Add(optarg);
-                return 0;
-            case 'c':
-                Git_Commit(optarg);
-                return 0;
-            case 'b':
-                Git_Branch(optarg);
-                return 0;
-            case 'o':
-                Git_Checkout(optarg);
-                return 0;
-            case 'm':
-                Git_Merge();
-                return 0;
-            case 'r':
-                Git_Rebase();
-                return 0;
-            default:
-                return 1;
-        }
+    char* cmd = argv[1];
+
+    if (strcmp(cmd, "-v") == 0 || strcmp(cmd, "--version") == 0) {
+        Git_Version();
+    } else if(strcmp(cmd, "-h") == 0 || strcmp(cmd, "--help") == 0) {
+        Git_Help(argc-1, argv+1);
+    } else if (strcmp(cmd, "init") == 0) {
+        Git_Init(argc-1, argv+1);
+    } else if (strcmp(cmd, "add") == 0) {
+        Git_Add(argc-1, argv+1);
+    } else if (strcmp(cmd, "commit") == 0) {
+        Git_Commit(argc-1, argv+1);
+    } else if (strcmp(cmd, "branch") == 0) {
+        // Git_Branch(argc-1, argv+1);
+    } else if (strcmp(cmd, "checkout") == 0) {
+        // Git_Checkout(argc-1, argv+1);
+    } else if (strcmp(cmd, "merge") == 0) {
+
+    } else if(strcmp(cmd, "rebase") == 0) {
+
+    } else {
+        Git_Help(argc-1, argv+1);
+        return 1;
     }
 
     return 0;

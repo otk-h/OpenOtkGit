@@ -3,22 +3,23 @@
 int get_index(index_t* index) {
     int index_fd = -1;
     
-    // 孩子们，惊人的 if 是存在的
     if (index == NULL
         || (index_fd = open(GIT_INDEX_PATH, O_RDONLY)) == -1
-        || read(index_fd, &(index->ihdr), sizeof(index_hdr_t)) != sizeof(index_hdr_t)
+        || read(index_fd, index, sizeof(index_hdr_t)) != sizeof(index_hdr_t)
         || index->ihdr.magic != INDEX_MAGIC
-        // || (index->entry = malloc(sizeof(index_entry_t) * index->ihdr.entry_cnt)) == NULL
-        // || read(index_fd, index->entry, sizeof(index_entry_t) * index->ihdr.entry_cnt) != sizeof(index_entry_t) * index->ihdr.entry_cnt
     ) {
         goto error;
     }
 
     size_t entries_size = sizeof(index_entry_t) * index->ihdr.entry_cnt;
-    index->entry = malloc(sizeof(index_entry_t) * index->ihdr.entry_cnt);
-    if (index->entry == NULL
-        || read(index_fd, index->entry, entries_size) != entries_size
-    ) {
+    index_t* new_index = realloc(index, sizeof(index_hdr_t) + entries_size);
+    if (new_index == NULL) {
+        free(index);
+        goto error;
+    }
+
+    index = new_index;
+    if (read(index_fd, index->entry, entries_size) != entries_size) {
         goto error;
     }
 

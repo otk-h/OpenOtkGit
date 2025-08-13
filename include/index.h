@@ -34,7 +34,7 @@ typedef struct index_entry {
 
 typedef struct index {
     index_hdr_t     ihdr;
-    index_entry_t*  entry;
+    index_entry_t   entry[];
 } index_t;
 
 int get_index(index_t* index);
