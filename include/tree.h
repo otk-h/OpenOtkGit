@@ -33,5 +33,6 @@ int create_tree(index_t* index, const char* dir_path, char* hash);
 int create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_processed);
 int is_file_in_dir(const char* path, const char* dir_path);
 int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t** tree);
+int reset_index(tree_t* tree);
 
 #endif

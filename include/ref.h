@@ -20,5 +20,6 @@ int get_cur_branch(char* branch_name);
 int get_commit_hash(char* hash);
 int update_refs(char* hash);
 int is_detached();
+int checkout_safe_check(const char* branch_name);
 
 #endif

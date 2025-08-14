@@ -88,3 +88,26 @@ int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t
 
     return 0;
 }
+
+int reset_index(tree_t* tree) {
+    if (tree == NULL) { return 0; }
+
+    remove(GIT_INDEX_PATH);
+    int fd = -1;
+    fd = open(GIT_INDEX_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    index_hdr_t ihdr;
+    memset(&ihdr, 0, sizeof(ihdr));
+    ihdr.magic = INDEX_MAGIC;
+    ihdr.entry_cnt = 0;
+    write(fd, &ihdr, sizeof(ihdr));
+    close(fd);
+    
+    // TODO
+    for (int i = 0; i < tree->thdr.entry_cnt; i++) {
+
+    }
+    
+    close(fd);
+    
+    return 0;
+}

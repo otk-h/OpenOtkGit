@@ -1,10 +1,5 @@
 #include "OpenOtkGit.h"
 
-// --- assist func ---
-static int checkout_safe_check();
-static void clean_working_dir();
-static void rebuild_working_dir();
-
 void Git_Version() {
     printf("OpenOtkGit version\n\n");
 }
@@ -208,15 +203,16 @@ void Git_Checkout(int argc, char* argv[]) {
     } else if (is_Initialized() == 0) {
         printf("Not initialized.\n");
         return;
-    } else if (checkout_safe_check() == 0) {
-        return;
     }
 
     int fd = -1;
     int opt = -1;
-    if ((opt = getopt_long(argc, argv, "b:", checkout_options, NULL)) != -1) {
+    if ((opt = getopt_long(argc, argv, "b:B:", checkout_options, NULL)) != -1) {
         switch (opt) {
             case 'b':
+            char* branch = optarg;
+                if (checkout_safe_check(branch) == 0) { return; }
+            case 'B':
                 char* branch_name = optarg;
                 
                 char cur_branch[64];
@@ -239,6 +235,8 @@ void Git_Checkout(int argc, char* argv[]) {
                     write(fd, commit_hash, sizeof(commit_hash));
                     close(fd);
                 } else {
+                    // exist, get tree obj, update index, clean work dir, rebuild work dir
+                    // get tree obj
                     char tree_path[128];
                     snprintf(tree_path, sizeof(tree_path), "%s/%s", GIT_OBJECTS_DIR, commit_hash);
                     stat(tree_path, &st);
@@ -247,10 +245,14 @@ void Git_Checkout(int argc, char* argv[]) {
                     read(fd, tree, st.st_size);
                     close(fd);
 
-                    // update index with tree object
+                    // update index
+                    reset_index(tree);
 
                     // clean work dir
+                    clean_working_dir();
+                    
                     // rebuild work dir
+                    rebuild_working_dir();
                     
                 }
                 
@@ -259,7 +261,7 @@ void Git_Checkout(int argc, char* argv[]) {
                 memset(&head, 0, sizeof(head));
                 snprintf((char*)&head, sizeof(head), "%s%s", DEFAULT_HEAD_STR, branch_name);
                 fd = open(GIT_HEAD_PATH, O_WRONLY);
-                write(fd, head_content, sizeof(head_content));
+                write(fd, &head, sizeof(head));
                 close(fd);
 
                 return;
@@ -282,25 +284,3 @@ void Git_Checkout(int argc, char* argv[]) {
 
 //     // TODO
 // }
-
-
-// --- assist func ---
-
-static int checkout_safe_check() {
-    // TODO: check index commit
-    printf("uncommitted file '%s' in index.\n", GIT_DIR);
-    return 0;
-    // TODO: check working dir untracked
-    printf("untracked file '%s' in working dir", GIT_DIR);
-    return 0;
-    // // TODO: check overwritten of untracked file
-    return 1;
-}
-
-static void clean_working_dir() {
-    
-}
-
-static void rebuild_working_dir() {
-
-}

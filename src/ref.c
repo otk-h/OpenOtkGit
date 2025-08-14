@@ -57,8 +57,19 @@ int get_commit_hash(char* hash) {
 
     // }
 
-    // // TODO
+    // TODO
 
+    return 0;
+
+}
+
+int checkout_safe_check(const char* branch_name) {
+    // TODO: check index commit
+    printf("uncommitted file '%s' in index.\n", GIT_DIR);
+    return 0;
+    // TODO: check working dir untracked
+    printf("untracked file '%s' in working dir", GIT_DIR);
+    return 0;
+    // // TODO: check overwritten of untracked file
     return 1;
-
 }

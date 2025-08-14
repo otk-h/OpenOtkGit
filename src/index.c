@@ -71,3 +71,8 @@ error:
     perror(NULL);
     return 0;
 }
+
+int rebuild_working_dir() {
+    // TODO
+    return 0;
+}

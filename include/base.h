@@ -26,5 +26,6 @@ void calculate_sha1(const char* path, char* hash);
 int is_Initialized();
 int get_entry_name(const char* path, const char* dir_path, char* name);
 int create_object(void* ptr, size_t size, char* hash);
+int clean_working_dir();
 
 #endif

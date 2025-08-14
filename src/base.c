@@ -77,3 +77,9 @@ int create_object(void* ptr, size_t size, char* hash) {
     close(fd);
     return 1;
 }
+
+int clean_working_dir() {
+    // TODO
+    
+    return 0;
+}

@@ -79,16 +79,16 @@ static struct option branch_options[] = {
 //     {0, 0, 0, 0}
 // };
 
-static struct option checkout_option[] = {
+static struct option checkout_options[] = {
     {"branch",  required_argument, 0, 'b'}, // create and switch
-    // {"Branch",  required_argument, 0, 'B'}, // create, reset and switch
+    {"Branch",  required_argument, 0, 'B'}, // create, reset and switch
     // {"orphan",  required_argument, 0, 'o'}, // create isolated branch
     // {"force",   no_argument,       0, 'f'},
     // // -- <file>, track, ...
     {0, 0, 0, 0}
 };
 
-// static struct option merge_option[] = {
+// static struct option merge_options[] = {
 //     {0, 0, 0, 0}
 // };
 
