@@ -1,10 +1,16 @@
 #include "blob.h"
 
-int create_blob(const char* path, char* hash) {
-    if (path == NULL || hash == NULL) { return 0; }
+void create_blob(const char* path, char* hash) {
+    if (path == NULL || hash == NULL) { 
+        printf("error while creating blob: memory empty.\n");
+        exit(1);
+    }
     
     struct stat st;
-    if (stat(path, &st) == -1) { goto error; }
+    if (stat(path, &st) == -1) {
+        printf("error while creating blob: file not exist.\n");
+        exit(1);
+    }
 
     // generate blob
     size_t blob_sz = sizeof(blob_hdr_t) + st.st_size;
@@ -16,9 +22,5 @@ int create_blob(const char* path, char* hash) {
     // create object
     create_object((void*)blob, blob_sz, hash);
     free(blob);
-    return 1;
 
-error:
-    perror(NULL);
-    return 0;
 }

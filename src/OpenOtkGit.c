@@ -33,18 +33,6 @@ void Git_Init(int argc, char* argv[]) {
     sprintf(rm_cmd, "rm -rf %s", GIT_DIR);
     system(rm_cmd);
 
-    // set index hdr
-    index_hdr_t ihdr;
-    ihdr.magic = INDEX_MAGIC;
-    ihdr.entry_cnt = 0;
-
-    // set HEAD
-    head_t head;
-    memset(&head, 0, sizeof(head));
-    snprintf((char*)&head, sizeof(head), "%s%s", DEFAULT_HEAD_STR, DEFAULT_BRANCH);
-
-    FILE* fd = NULL;
-
     // create dir
     if (mkdir(GIT_DIR, 0755) == -1
         || mkdir(GIT_OBJECTS_DIR, 0755) == -1
@@ -56,9 +44,15 @@ void Git_Init(int argc, char* argv[]) {
     }
 
     // create index
+    index_hdr_t ihdr;
+    memset(&ihdr, 0, sizeof(ihdr));
+    ihdr.magic = INDEX_MAGIC;
     write_func(GIT_INDEX_PATH, &ihdr, sizeof(ihdr));
 
     // create HEAD
+    head_t head;
+    memset(&head, 0, sizeof(head));
+    snprintf((char*)&head, sizeof(head), "%s%s", DEFAULT_HEAD_STR, DEFAULT_BRANCH);
     write_func(GIT_HEAD_PATH, &head, sizeof(head));
 
     printf("Git_Init: finish\n\n");
@@ -72,26 +66,24 @@ void Git_Add(int argc, char* argv[]) {
         printf("Nothing specified, nothing added.\n");
         return;
     } else if (is_Initialized() == 0) {
-        printf("Not initialized, nothing added.\n");
+        printf("Not initialized.\n");
         return;
     } else if (strncmp(path, "./", strlen("./")) != 0) {
-        printf("Path should begin with './', nothing added.\n");
+        printf("Path should begin with './'.\n");
         return;
     } else if (stat(path, &st) == -1) {
         printf("Pathspec '%s' did not match any files.\n", path);
         return;
     } else if (S_ISDIR(st.st_mode)) {
-        printf("Pathspec should be a file.\n");
+        printf("Pathspec '%s' should be a file.\n", path);
         return;
     }
 
     char hash[HASH_LENGTH + 1];
-    if (create_blob(path, hash)
-        && add_entry_to_index(path, hash)
-    ) {
-        printf("Git_Add: finish\n\n");
-        return;
-    }
+    create_blob(path, hash);
+    add_entry_to_index(path, hash);
+    
+    printf("Git_Add: finish\n\n");
 
 }
 
@@ -123,20 +115,19 @@ void Git_Commit(int argc, char* argv[]) {
         }
     }
 
-    index_t* index = malloc(sizeof(index_hdr_t));
-    if (get_index(index) == 0) { return; }
+    index_t* index = NULL;
+    get_index(&index);
 
     char tree_hash[HASH_LENGTH + 1];
     char commit_hash[HASH_LENGTH + 1];
 
-    if (create_tree(index, ".", tree_hash)
-        && create_commit(message, tree_hash, commit_hash)
-        && update_refs(commit_hash)
-    ) {
-        printf("Git_Commit: finish\n\n");
-    }
-
+    create_tree(index, ".", tree_hash);
+    create_commit(message, tree_hash, commit_hash);
+    update_refs(commit_hash);
+    
     free(index);
+
+    printf("Git_Commit: finish\n\n");
 
 }
 
@@ -236,13 +227,13 @@ void Git_Checkout(int argc, char* argv[]) {
                     read_func(tree_path, tree, st.st_size);
 
                     // update index
-                    reset_index(tree);
+                    reset_index_from_tree(tree);
 
                     // clean work dir
                     clean_working_dir("./");
                     
-                    // rebuild work dir
-                    rebuild_working_dir();
+                    // // rebuild work dir
+                    // rebuild_working_dir_from_tree();
                     
                 }
                 

@@ -16,6 +16,6 @@ typedef struct blob {
     char content[];
 } blob_t;
 
-int create_blob(const char* path, char* hash);
+void create_blob(const char* path, char* hash);
 
 #endif

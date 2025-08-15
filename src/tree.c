@@ -1,15 +1,24 @@
 #include "tree.h"
 
-int create_tree(index_t* index, const char* dir_path, char* hash) {
+void create_tree(index_t* index, const char* dir_path, char* hash) {
+    if (index == NULL || dir_path == NULL || hash == NULL) { 
+        printf("error while creating tree: memory empty.\n");
+        exit(1);
+    }
+
     int is_processed[index->ihdr.entry_cnt];
     memset(is_processed, 0, sizeof(is_processed));
     create_tree_func(index, dir_path, hash, is_processed);
+
 }
 
-int create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_processed) {
+void create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_processed) {
     tree_t* tree = malloc(sizeof(tree_hdr_t));
 
-    if (hash == NULL || dir_path == NULL || index == NULL || tree == NULL) { return 0; }
+    if (hash == NULL || dir_path == NULL || tree == NULL) { 
+        printf("error while creating tree: memory empty.\n");
+        exit(1);
+    }
 
     tree->thdr.magic = TREE_MAGIC;
     tree->thdr.entry_cnt = 0;
@@ -45,7 +54,6 @@ int create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_p
     size_t tree_size = sizeof(tree_hdr_t) + sizeof(tree_entry_t) * tree->thdr.entry_cnt;
     create_object((void*)tree, tree_size, hash);
     free(tree);
-    return 1;
 
 }
 
@@ -86,12 +94,11 @@ int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t
     return 0;
 }
 
-int reset_index(tree_t* tree) {
+int reset_index_from_tree(tree_t* tree) {
     if (tree == NULL) { return 0; }
+    remove(GIT_INDEX_PATH);
 
     int fd = -1;
-
-    remove(GIT_INDEX_PATH);
 
     index_hdr_t ihdr;
     memset(&ihdr, 0, sizeof(ihdr));
@@ -107,4 +114,13 @@ int reset_index(tree_t* tree) {
     close(fd);
     
     return 0;
+}
+
+int rebuild_working_dir_from_tree(const char* base_path, tree_t* tree) {
+    mkdir(base_path);
+
+    for (int i = 0; i < tree->thdr.entry_cnt; i++) {
+
+    }
+
 }

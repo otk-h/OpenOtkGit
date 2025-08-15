@@ -1,33 +1,28 @@
 #include "index.h"
 
-int get_index(index_t* index) {
-    int index_fd = -1;
-    
-    if (index == NULL
-        || (index_fd = open(GIT_INDEX_PATH, O_RDONLY)) == -1
-        || read(index_fd, index, sizeof(index_hdr_t)) != sizeof(index_hdr_t)
-        || index->ihdr.magic != INDEX_MAGIC
-    ) {
-        goto error;
-    }
+int get_index(index_t** index) {
+    if (index == NULL) { return 0; }
+    if (*index != NULL) { free(*index); }
+    *index = malloc(sizeof(index_hdr_t));
 
-    size_t entries_size = sizeof(index_entry_t) * index->ihdr.entry_cnt;
-    index_t* new_index = realloc(index, sizeof(index_hdr_t) + entries_size);
+    read_func(GIT_INDEX_PATH, *index, sizeof(index_hdr_t));
+    if ((*index)->ihdr.magic != INDEX_MAGIC) { goto error; }
+
+    size_t entries_size = sizeof(index_entry_t) * (*index)->ihdr.entry_cnt;
+    index_t* new_index = realloc(*index, sizeof(index_hdr_t) + entries_size);
     if (new_index == NULL) {
-        free(index);
+        free(*index);
         goto error;
     }
 
-    index = new_index;
-    if (read(index_fd, index->entry, entries_size) != entries_size) {
-        goto error;
-    }
+    *index = new_index;
+    read_func(GIT_INDEX_PATH, *index, sizeof(index_hdr_t) + entries_size);
 
     // // DEBUG
     // for (int i = 0; i < index->ihdr.entry_cnt; i++) {
     //     printf("%s: %s\n", index->entry[i].path, index->entry[i].hash);
     // }
-
+    
     return 1;
 
 error:
@@ -69,10 +64,5 @@ int add_entry_to_index(const char* path, char* hash) {
     return 1;
 error:
     perror(NULL);
-    return 0;
-}
-
-int rebuild_working_dir() {
-    // TODO
     return 0;
 }

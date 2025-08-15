@@ -3,7 +3,6 @@
 
 #include "utils.h"
 #include "index.h"
-// tree = tree_hdr + n * tree_entry
 
 #define TREE_MAGIC 0x54524545 // "TREE"
 
@@ -29,10 +28,11 @@ typedef struct tree {
     tree_entry_t  entry[];
 } tree_t;
 
-int create_tree(index_t* index, const char* dir_path, char* hash);
-int create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_processed);
+void create_tree(index_t* index, const char* dir_path, char* hash);
+void create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_processed);
 int is_file_in_dir(const char* path, const char* dir_path);
 int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t** tree);
-int reset_index(tree_t* tree);
+int reset_index_from_tree(tree_t* tree);
+int rebuild_working_dir_from_tree(const char* base_path, tree_t* tree);
 
 #endif
