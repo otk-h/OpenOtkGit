@@ -1,7 +1,7 @@
 #ifndef __TREE_H__
 #define __TREE_H__
 
-#include "base.h"
+#include "utils.h"
 #include "index.h"
 // tree = tree_hdr + n * tree_entry
 

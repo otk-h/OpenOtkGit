@@ -10,12 +10,8 @@ int create_commit(const char* message, const char* tree_hash, char* commit_hash)
 
     set_parent_commit(commit);
 
-    if (create_object((void*)commit, sizeof(commit_t), commit_hash) == 0) {
-        free(commit);
-        return 0;
-    }
+    create_object((void*)commit, sizeof(commit_t), commit_hash);
     free(commit);
-
     return 1;
 
 }
@@ -30,9 +26,7 @@ int set_parent_commit(commit_t* commit) {
     snprintf(branch_path, sizeof(branch_path), "%s/%s", GIT_REFS_HEADS_DIR, branch_name);
     if (stat(branch_path, &st) == -1) { return 1; }
 
-    int fd = -1;
-    fd = open(branch_path, O_RDONLY);
-    read(fd, hash, sizeof(hash));
+    read_func(branch_path, hash, sizeof(hash));
     hash[HASH_LENGTH] = '\0';
 
     memcpy(commit->parent_hash[commit->parent_cnt], hash, strlen(hash));

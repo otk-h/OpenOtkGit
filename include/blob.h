@@ -1,7 +1,7 @@
 #ifndef __BLOB_H__
 #define __BLOB_H__
 
-#include "base.h"
+#include "utils.h"
 #include "index.h"
 
 #define BLOB_MAGIC 0x424C4F42 // "BLOB"

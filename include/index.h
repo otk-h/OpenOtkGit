@@ -1,7 +1,7 @@
 #ifndef __INDEX_H__
 #define __INDEX_H__
 
-#include "base.h"
+#include "utils.h"
 // index = index_hdr + n * entry
 
 #define INDEX_MAGIC 0x44495243 // "DIRC"

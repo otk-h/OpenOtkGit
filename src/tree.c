@@ -43,10 +43,7 @@ int create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_p
 
     // create object
     size_t tree_size = sizeof(tree_hdr_t) + sizeof(tree_entry_t) * tree->thdr.entry_cnt;
-    if (create_object((void*)tree, tree_size, hash) == 0) {
-        free(tree);
-        return 0;
-    }
+    create_object((void*)tree, tree_size, hash);
     free(tree);
     return 1;
 
@@ -92,15 +89,15 @@ int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t
 int reset_index(tree_t* tree) {
     if (tree == NULL) { return 0; }
 
-    remove(GIT_INDEX_PATH);
     int fd = -1;
-    fd = open(GIT_INDEX_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+    remove(GIT_INDEX_PATH);
+
     index_hdr_t ihdr;
     memset(&ihdr, 0, sizeof(ihdr));
     ihdr.magic = INDEX_MAGIC;
     ihdr.entry_cnt = 0;
-    write(fd, &ihdr, sizeof(ihdr));
-    close(fd);
+    write_func(GIT_INDEX_PATH, &ihdr, sizeof(ihdr));
     
     // TODO
     for (int i = 0; i < tree->thdr.entry_cnt; i++) {

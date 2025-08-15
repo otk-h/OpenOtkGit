@@ -1,7 +1,7 @@
 #ifndef __COMMIT_H__
 #define __COMMIT_H__
 
-#include "base.h"
+#include "utils.h"
 #include "ref.h"
 
 typedef struct commit {

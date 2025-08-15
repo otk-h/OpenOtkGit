@@ -56,22 +56,10 @@ void Git_Init(int argc, char* argv[]) {
     }
 
     // create index
-    if ((fd = fopen(GIT_INDEX_PATH, "w")) == NULL
-        || fwrite(&ihdr, 1, sizeof(ihdr), fd) != sizeof(ihdr)
-        || fclose(fd) != 0
-    ) {
-        perror(NULL);
-        return;
-    }
+    write_func(GIT_INDEX_PATH, &ihdr, sizeof(ihdr));
 
     // create HEAD
-    if ((fd = fopen(GIT_HEAD_PATH, "w")) == NULL
-        || fwrite(&head, 1, sizeof(head), fd) != sizeof(head)
-        || fclose(fd) != 0
-    ) {
-        perror(NULL);
-        return;
-    }
+    write_func(GIT_HEAD_PATH, &head, sizeof(head));
 
     printf("Git_Init: finish\n\n");
 }
@@ -90,7 +78,7 @@ void Git_Add(int argc, char* argv[]) {
         printf("Path should begin with './', nothing added.\n");
         return;
     } else if (stat(path, &st) == -1) {
-        printf("Pathspec '%s' did not match any files.", path);
+        printf("Pathspec '%s' did not match any files.\n", path);
         return;
     } else if (S_ISDIR(st.st_mode)) {
         printf("Pathspec should be a file.\n");
@@ -207,49 +195,51 @@ void Git_Checkout(int argc, char* argv[]) {
 
     int fd = -1;
     int opt = -1;
-    if ((opt = getopt_long(argc, argv, "b:B:", checkout_options, NULL)) != -1) {
+    if ((opt = getopt_long(argc, argv, "b:", checkout_options, NULL)) != -1) {
         switch (opt) {
             case 'b':
-            char* branch = optarg;
-                if (checkout_safe_check(branch) == 0) { return; }
-            case 'B':
                 char* branch_name = optarg;
-                
+
+                // same branch, do nothing
                 char cur_branch[64];
                 get_cur_branch(cur_branch);
                 if (strcmp(branch_name, cur_branch) == 0) {
                     printf("Same branch, do nothing.\n");
                     return;
                 }
+
+                // safe check
+                if (checkout_safe_check(branch_name) == 0) { return; }
+                
                 // get commit hash
                 char commit_hash[41];
                 get_commit_hash(commit_hash);
-                
-                // get cur branch path
+
+                // get target branch path
                 char branch_path[128];
                 snprintf(branch_path, sizeof(branch_path), "%s/%s", GIT_REFS_HEADS_DIR, branch_name);
                 struct stat st;
                 if (stat(branch_path, &st) == -1) {
                     // not exist, create and copy hash
-                    fd = open(branch_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-                    write(fd, commit_hash, sizeof(commit_hash));
-                    close(fd);
+                    
+                    printf("Branch '%s' not exist, create and copy from current branch '%s'.\n", branch_name, cur_branch);
+                    write_func(branch_path, commit_hash, sizeof(commit_hash));
+                    
                 } else {
                     // exist, get tree obj, update index, clean work dir, rebuild work dir
+                    
                     // get tree obj
                     char tree_path[128];
                     snprintf(tree_path, sizeof(tree_path), "%s/%s", GIT_OBJECTS_DIR, commit_hash);
                     stat(tree_path, &st);
-                    fd = open(tree_path, O_RDONLY);
                     tree_t* tree = (tree_t*)malloc(st.st_size);
-                    read(fd, tree, st.st_size);
-                    close(fd);
+                    read_func(tree_path, tree, st.st_size);
 
                     // update index
                     reset_index(tree);
 
                     // clean work dir
-                    clean_working_dir();
+                    clean_working_dir("./");
                     
                     // rebuild work dir
                     rebuild_working_dir();
@@ -260,9 +250,7 @@ void Git_Checkout(int argc, char* argv[]) {
                 head_t head;
                 memset(&head, 0, sizeof(head));
                 snprintf((char*)&head, sizeof(head), "%s%s", DEFAULT_HEAD_STR, branch_name);
-                fd = open(GIT_HEAD_PATH, O_WRONLY);
-                write(fd, &head, sizeof(head));
-                close(fd);
+                write_func(GIT_HEAD_PATH, &head, sizeof(head));
 
                 return;
             default: 

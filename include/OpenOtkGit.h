@@ -1,7 +1,6 @@
 #ifndef __OPEN_OTK_GIT__
 #define __OPEN_OTK_GIT__
 
-#include <dirent.h>
 #include <getopt.h>
 
 #include "index.h"
@@ -81,7 +80,7 @@ static struct option branch_options[] = {
 
 static struct option checkout_options[] = {
     {"branch",  required_argument, 0, 'b'}, // create and switch
-    {"Branch",  required_argument, 0, 'B'}, // create, reset and switch
+    // {"Branch",  required_argument, 0, 'B'}, // create, reset and switch
     // {"orphan",  required_argument, 0, 'o'}, // create isolated branch
     // {"force",   no_argument,       0, 'f'},
     // // -- <file>, track, ...
