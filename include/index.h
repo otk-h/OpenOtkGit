@@ -39,6 +39,6 @@ typedef struct index {
 
 void get_index(index_t** index);
 void update_index(index_t* index);
-void add_entry_to_index(const char* path, const char* hash, index_t** index);
+void add_entry_to_index(const char* path, const char* hash, size_t file_sz, index_t** index);
 
 #endif

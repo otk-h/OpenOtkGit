@@ -66,6 +66,18 @@ error:
     exit(1);
 }
 
+void set_file_mode(const char* path, mode_t mode) {
+    int fd = -1;
+    fd = open(path, O_RDONLY);
+    if (fd == -1) { goto error; }
+    if (fchmod(fd, mode & 07777) == -1) { goto error; }
+    close(fd);
+    return;
+error:
+    perror(NULL);
+    exit(1);
+}
+
 int get_entry_name(const char* path, const char* dir_path, char* name) {
     if (path == NULL || dir_path == NULL || name == NULL) { return 0; }
     size_t dir_len = strlen(dir_path);

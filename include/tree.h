@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "index.h"
+#include "blob.h"
 
 #define TREE_MAGIC 0x54524545 // "TREE"
 
@@ -34,6 +35,7 @@ void add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_
 int is_file_in_dir(const char* path, const char* dir_path);
 void rebuild_index_from_tree(const char* tree_hash);
 void rebuild_index_from_tree_func(index_t** index, const char* tree_hash, const char* dir_path);
-void rebuild_working_dir_from_tree(const char* base_path, tree_t* tree);
+void rebuild_working_dir_from_tree(const char* tree_hash);
+void rebuild_working_dir_from_tree_func(const char* tree_hash, const char* dir_path);
 
 #endif

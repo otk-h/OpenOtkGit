@@ -39,10 +39,10 @@ void update_index(index_t* index) {
 
 }
 
-void add_entry_to_index(const char* path, const char* hash, index_t** index) {
+void add_entry_to_index(const char* path, const char* hash, size_t file_sz, index_t** index) {
     if (path == NULL || hash == NULL || index == NULL) { exit(1); }
-    struct stat st;
-    if (stat(path, &st) == -1) { exit(1); }
+    // struct stat st;
+    // if (stat(path, &st) == -1) { exit(1); }
     
     size_t new_index_size = sizeof(index_hdr_t) + ((*index)->ihdr.entry_cnt + 1) * sizeof(index_entry_t);
     index_t* new_index = realloc(*index, new_index_size);
@@ -51,7 +51,7 @@ void add_entry_to_index(const char* path, const char* hash, index_t** index) {
     *index = new_index;
     int idx = (*index)->ihdr.entry_cnt;
     memset(&(*index)->entry[idx], 0, sizeof(index_entry_t));
-    (*index)->entry[idx].file_sz = st.st_size;
+    (*index)->entry[idx].file_sz = file_sz;
     memcpy((*index)->entry[idx].path, path, strlen(path));
     memcpy((*index)->entry[idx].hash, hash, strlen(hash));
 

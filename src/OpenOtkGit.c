@@ -84,7 +84,7 @@ void Git_Add(int argc, char* argv[]) {
 
     index_t* index = NULL;
     get_index(&index);
-    add_entry_to_index(path, hash, &index);
+    add_entry_to_index(path, hash, st.st_size, &index);
     update_index(index);
     
     printf("Git_Add: finish\n\n");
@@ -235,15 +235,11 @@ void Git_Checkout(int argc, char* argv[]) {
                     memset(tree_hash, 0, sizeof(tree_hash));
                     memcpy(tree_hash, commit.tree_hash, strlen(commit.tree_hash));
 
-                    // update index
+                    // rebuild index & working dir
                     rebuild_index_from_tree(tree_hash);
-
-                    // clean work dir
-                    clean_working_dir("./");
-                    
-                    // // rebuild work dir
-                    // rebuild_working_dir_from_tree();
-                    
+                    clean_working_dir(".");
+                    rebuild_working_dir_from_tree(tree_hash);
+                  
                 }
                 
                 // update HEAD
@@ -252,6 +248,7 @@ void Git_Checkout(int argc, char* argv[]) {
                 snprintf((char*)&head, sizeof(head), "%s%s", DEFAULT_HEAD_STR, branch_name);
                 write_func(GIT_HEAD_PATH, &head, sizeof(head));
 
+                printf("Git_Checkout: from '%s' to '%s'.\n", cur_branch, branch_name);
                 return;
             default: 
                 return;
@@ -261,14 +258,26 @@ void Git_Checkout(int argc, char* argv[]) {
 
 }
 
-// void Git_Merge(int argc, char* argv[]) {
-//     printf("Git_Merge: \n\n");
+void Git_Status(int argc, char* argv[]) {
+    printf("Git_Status: \n\n");
 
-//     // TODO
-// }
+    // TODO
+}
 
-// void Git_Rebase() {
-//     printf("Git_Rebase: \n\n");
+void Git_Log(int argc, char* argv[]) {
+    printf("Git_Log: \n\n");
 
-//     // TODO
-// }
+    // TODO
+}
+
+void Git_Merge(int argc, char* argv[]) {
+    printf("Git_Merge: \n\n");
+
+    // TODO
+}
+
+void Git_Rebase(int argc, char* argv[]) {
+    printf("Git_Rebase: \n\n");
+
+    // TODO
+}

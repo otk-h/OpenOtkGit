@@ -35,6 +35,7 @@ void read_func(const char* path, void* buf, size_t size);
 
 // dir
 void clean_working_dir(const char* path);
+void set_file_mode(const char* path, mode_t mode);
 int get_entry_name(const char* path, const char* dir_path, char* name);
 
 // necessary

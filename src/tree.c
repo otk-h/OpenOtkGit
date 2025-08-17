@@ -94,7 +94,7 @@ int is_file_in_dir(const char* path, const char* dir_path) {
 }
 
 void rebuild_index_from_tree(const char* tree_hash) {
-    if (tree_hash == NULL) { exit(1); }
+    if (tree_hash == NULL) { perror(NULL); exit(1); }
     remove(GIT_INDEX_PATH);
 
     // reset index
@@ -106,15 +106,49 @@ void rebuild_index_from_tree(const char* tree_hash) {
 
     index_t* index = NULL;
     get_index(&index);
-    
     rebuild_index_from_tree_func(&index, tree_hash, ".");
-    
     update_index(index);
-    
+
 }
 
 void rebuild_index_from_tree_func(index_t** index, const char* tree_hash, const char* dir_path) {
-    if (*index == NULL || tree_hash == NULL || dir_path == NULL) { exit(1); }
+    if (*index == NULL || tree_hash == NULL || dir_path == NULL) { perror(NULL); exit(1); }
+
+    // get tree obj
+    struct stat st;
+    char tree_path[128];
+    snprintf(tree_path, sizeof(tree_path), "%s/%s", GIT_OBJECTS_DIR, tree_hash);
+    if (stat(tree_path, &st) == -1) { perror(NULL); exit(1); }
+    tree_t* tree = (tree_t*)malloc(st.st_size);
+    read_func(tree_path, tree, st.st_size);
+
+    // traverse tree entry
+    for (int i = 0; i < tree->thdr.entry_cnt; i++) {
+        char blob_path[128];
+        char entry_path[128];
+        snprintf(blob_path, sizeof(blob_path), "%s/%s", GIT_OBJECTS_DIR, tree->entry[i].hash);
+        snprintf(entry_path, sizeof(entry_path), "%s/%s", dir_path, tree->entry[i].name);
+        
+        if (stat(blob_path, &st) == -1) { perror(NULL); exit(1); }
+        
+        if (S_ISDIR(st.st_mode)) {
+            rebuild_index_from_tree_func(index, tree->entry[i].hash, entry_path);
+        } else if (S_ISREG(st.st_mode)) {
+            add_entry_to_index(entry_path, tree->entry[i].hash, st.st_size - sizeof(blob_hdr_t), index);
+        }
+    }
+
+}
+
+void rebuild_working_dir_from_tree(const char* tree_hash) {
+    if (tree_hash == NULL) { perror("1\n");exit(1); }
+
+    rebuild_working_dir_from_tree_func(tree_hash, ".");
+
+}
+
+void rebuild_working_dir_from_tree_func(const char* tree_hash, const char* dir_path) {
+    if (tree_hash == NULL || dir_path == NULL) { exit(1); }
 
     // get tree obj
     struct stat st;
@@ -128,22 +162,21 @@ void rebuild_index_from_tree_func(index_t** index, const char* tree_hash, const 
     for (int i = 0; i < tree->thdr.entry_cnt; i++) {
         char entry_path[128];
         snprintf(entry_path, sizeof(entry_path), "%s/%s", dir_path, tree->entry[i].name);
-        if (stat(entry_path, &st) == -1) { exit(1); }
-        
-        if (S_ISDIR(st.st_mode)) {
-            rebuild_index_from_tree_func(index, tree->entry[i].hash, entry_path);
-        } else if (S_ISREG(st.st_mode)) {
-            add_entry_to_index(entry_path, tree->entry[i].hash, index);
+
+        if (S_ISDIR(tree->entry[i].mode)) {
+            if (mkdir(entry_path, 0755) == -1) { perror(NULL); exit(1); }
+            rebuild_working_dir_from_tree_func(tree->entry[i].hash, entry_path);
+        } else if (S_ISREG(tree->entry[i].mode)) {
+            char blob_path[128];
+            snprintf(blob_path, sizeof(blob_path), "%s/%s", GIT_OBJECTS_DIR, tree->entry[i].hash);
+            if (stat(blob_path, &st) == -1) { exit(1); }
+
+            blob_t* blob = malloc(st.st_size);
+            memset(blob, 0, sizeof(st.st_size));
+            read_func(blob_path, blob, st.st_size);
+
+            write_func(entry_path, blob->content, st.st_size - sizeof(blob_hdr_t));
+            set_file_mode(entry_path, tree->entry[i].mode);
         }
     }
-
-}
-
-void rebuild_working_dir_from_tree(const char* base_path, tree_t* tree) {
-    // mkdir(base_path);
-
-    // for (int i = 0; i < tree->thdr.entry_cnt; i++) {
-
-    // }
-
 }

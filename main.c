@@ -20,12 +20,16 @@ int main(int argc, char* argv[]) {
         Git_Commit(argc-1, argv+1);
     } else if (strcmp(cmd, "branch") == 0) {
         Git_Branch(argc-1, argv+1);
+    } else if (strcmp(cmd, "log") == 0) {
+        Git_Log(argc-1, argv+1);
+    } else if (strcmp(cmd, "status") == 0) {
+        Git_Status(argc-1, argv+1);
     } else if (strcmp(cmd, "checkout") == 0) {
         Git_Checkout(argc-1, argv+1);
     } else if (strcmp(cmd, "merge") == 0) {
-
+        Git_Merge(argc-1, argv+1);
     } else if(strcmp(cmd, "rebase") == 0) {
-
+        Git_Rebase(argc-1, argv+1);
     } else {
         Git_Help(argc-1, argv+1);
         return 1;

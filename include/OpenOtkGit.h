@@ -15,31 +15,31 @@ void Git_Add(int argc, char* argv[]);
 void Git_Commit(int argc, char* argv[]);
 void Git_Branch(int argc, char* argv[]);
 void Git_Checkout(int argc, char* argv[]);
-// void Git_Status(int argc, char* argv[]);
-// void Git_Log(int argc, char* argv[]);
-// void Git_Merge(int argc, char* argv[]);
-// void Git_Rebase(int argc, char* argv[]);
+void Git_Status(int argc, char* argv[]);
+void Git_Log(int argc, char* argv[]);
+void Git_Merge(int argc, char* argv[]);
+void Git_Rebase(int argc, char* argv[]);
 
-// static struct option help_options[] = {
-//     {0, 0, 0, 0}
-// };
+static struct option help_options[] = {
+    {0, 0, 0, 0}
+};
 
-// static struct option init_options[] = {
+static struct option init_options[] = {
 //     {"bare",    no_argument,        0, 'b'},
 //     {"template",required_argument,  0, 't'},
 //     {"quiet",   no_argument,        0, 'q'},
-//     {0, 0, 0, 0}
-// };
+    {0, 0, 0, 0}
+};
 
-// static struct option add_options[] = {
+static struct option add_options[] = {
 //     {"all",         no_argument, 0, 'A'},   // add all modified file
 //     {"update",      no_argument, 0, 'u'},   // add all tracked file
 //     {"patch",       no_argument, 0, 'p'},
 //     {"interactive", no_argument, 0, 'i'},
 //     {"force",       no_argument, 0, 'f'},   // allow ignored file
 //     {"dry-run",     no_argumentm 0, 'n'},   // display but not add
-//     {0, 0, 0, 0}
-// };
+    {0, 0, 0, 0}
+};
 
 static struct option commit_options[] = {
     {"message", required_argument,  0, 'm'},
@@ -64,19 +64,19 @@ static struct option branch_options[] = {
     {0, 0, 0, 0}
 };
 
-// static struct option status_options[] = {
+static struct option status_options[] = {
 //     {"short",   no_argument, 0, 's'},
 //     {"branch",  no_argument, 0, 'b'},
 //     // porcelain, ignored, untracked-files, ...
-//     {0, 0, 0, 0}
-// };
+    {0, 0, 0, 0}
+};
 
-// static struct option log_options[] = {
+static struct option log_options[] = {
 //     {"max-count",   required_argument,  0, 'n'},
 //     {"patch",       no_argument,        0, 'p'},
 //     // oneline, graph, decorate, author, grep, stat, since, after, until, before, ...
-//     {0, 0, 0, 0}
-// };
+    {0, 0, 0, 0}
+};
 
 static struct option checkout_options[] = {
     {"branch",  required_argument, 0, 'b'}, // create and switch
@@ -87,8 +87,8 @@ static struct option checkout_options[] = {
     {0, 0, 0, 0}
 };
 
-// static struct option merge_options[] = {
-//     {0, 0, 0, 0}
-// };
+static struct option merge_options[] = {
+    {0, 0, 0, 0}
+};
 
 #endif
