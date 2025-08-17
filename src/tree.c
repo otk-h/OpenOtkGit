@@ -57,6 +57,27 @@ void create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_
 
 }
 
+void add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t** tree) {
+    if (name == NULL || hash == NULL || tree == NULL) { exit(1); }
+    
+    size_t new_tree_size = sizeof(tree_hdr_t) + ((*tree)->thdr.entry_cnt + 1) * sizeof(tree_entry_t);
+    tree_t* new_tree = realloc(*tree, new_tree_size);
+    if (new_tree == NULL) { exit(1); }
+
+    *tree = new_tree;
+    int idx = (*tree)->thdr.entry_cnt;
+    memset(&(*tree)->entry[idx], 0, sizeof(tree_entry_t));
+    (*tree)->entry[idx].mode = st.st_mode;
+    memcpy((*tree)->entry[idx].name, name, strlen(name));
+    memcpy((*tree)->entry[idx].hash, hash, strlen(hash));
+
+    // // DEBUG
+    // printf("add: %s\n", tree->entry[idx].name);
+
+    (*tree)->thdr.entry_cnt += 1;
+
+}
+
 int is_file_in_dir(const char* path, const char* dir_path) {
     if (path == NULL || dir_path == NULL) { return 0; }
 
@@ -72,55 +93,57 @@ int is_file_in_dir(const char* path, const char* dir_path) {
     return 0;
 }
 
-int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t** tree) {
-    if (name == NULL || hash == NULL || tree == NULL) { return 0; }
-    
-    size_t new_tree_size = sizeof(tree_hdr_t) + ((*tree)->thdr.entry_cnt + 1) * sizeof(tree_entry_t);
-    tree_t* new_tree = realloc(*tree, new_tree_size);
-    if (new_tree == NULL) { return 0; }
-
-    *tree = new_tree;
-    int idx = (*tree)->thdr.entry_cnt;
-    memset(&(*tree)->entry[idx], 0, sizeof(tree_entry_t));
-    (*tree)->entry[idx].mode = st.st_mode;
-    memcpy((*tree)->entry[idx].name, name, strlen(name));
-    memcpy((*tree)->entry[idx].hash, hash, strlen(hash));
-
-    // // DEBUG
-    // printf("add: %s\n", tree->entry[idx].name);
-
-    (*tree)->thdr.entry_cnt += 1;
-
-    return 0;
-}
-
-int reset_index_from_tree(tree_t* tree) {
-    if (tree == NULL) { return 0; }
+void rebuild_index_from_tree(const char* tree_hash) {
+    if (tree_hash == NULL) { exit(1); }
     remove(GIT_INDEX_PATH);
 
-    int fd = -1;
-
+    // reset index
     index_hdr_t ihdr;
     memset(&ihdr, 0, sizeof(ihdr));
     ihdr.magic = INDEX_MAGIC;
     ihdr.entry_cnt = 0;
     write_func(GIT_INDEX_PATH, &ihdr, sizeof(ihdr));
-    
-    // TODO
-    for (int i = 0; i < tree->thdr.entry_cnt; i++) {
 
-    }
+    index_t* index = NULL;
+    get_index(&index);
     
-    close(fd);
+    rebuild_index_from_tree_func(&index, tree_hash, ".");
     
-    return 0;
+    update_index(index);
+    
 }
 
-int rebuild_working_dir_from_tree(const char* base_path, tree_t* tree) {
-    mkdir(base_path);
+void rebuild_index_from_tree_func(index_t** index, const char* tree_hash, const char* dir_path) {
+    if (*index == NULL || tree_hash == NULL || dir_path == NULL) { exit(1); }
 
+    // get tree obj
+    struct stat st;
+    char tree_path[128];
+    snprintf(tree_path, sizeof(tree_path), "%s/%s", GIT_OBJECTS_DIR, tree_hash);
+    if (stat(tree_path, &st) == -1) { exit(1); }
+    tree_t* tree = (tree_t*)malloc(st.st_size);
+    read_func(tree_path, tree, st.st_size);
+
+    // traverse tree entry
     for (int i = 0; i < tree->thdr.entry_cnt; i++) {
-
+        char entry_path[128];
+        snprintf(entry_path, sizeof(entry_path), "%s/%s", dir_path, tree->entry[i].name);
+        if (stat(entry_path, &st) == -1) { exit(1); }
+        
+        if (S_ISDIR(st.st_mode)) {
+            rebuild_index_from_tree_func(index, tree->entry[i].hash, entry_path);
+        } else if (S_ISREG(st.st_mode)) {
+            add_entry_to_index(entry_path, tree->entry[i].hash, index);
+        }
     }
+
+}
+
+void rebuild_working_dir_from_tree(const char* base_path, tree_t* tree) {
+    // mkdir(base_path);
+
+    // for (int i = 0; i < tree->thdr.entry_cnt; i++) {
+
+    // }
 
 }

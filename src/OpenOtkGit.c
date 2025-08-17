@@ -81,7 +81,11 @@ void Git_Add(int argc, char* argv[]) {
 
     char hash[HASH_LENGTH + 1];
     create_blob(path, hash);
-    add_entry_to_index(path, hash);
+
+    index_t* index = NULL;
+    get_index(&index);
+    add_entry_to_index(path, hash, &index);
+    update_index(index);
     
     printf("Git_Add: finish\n\n");
 
@@ -199,8 +203,8 @@ void Git_Checkout(int argc, char* argv[]) {
                     return;
                 }
 
-                // safe check
-                if (checkout_safe_check(branch_name) == 0) { return; }
+                // // safe check
+                // if (checkout_safe_check(branch_name) == 0) { return; }
                 
                 // get commit hash
                 char commit_hash[41];
@@ -217,17 +221,22 @@ void Git_Checkout(int argc, char* argv[]) {
                     write_func(branch_path, commit_hash, sizeof(commit_hash));
                     
                 } else {
-                    // exist, get tree obj, update index, clean work dir, rebuild work dir
-                    
-                    // get tree obj
-                    char tree_path[128];
-                    snprintf(tree_path, sizeof(tree_path), "%s/%s", GIT_OBJECTS_DIR, commit_hash);
-                    stat(tree_path, &st);
-                    tree_t* tree = (tree_t*)malloc(st.st_size);
-                    read_func(tree_path, tree, st.st_size);
+                    // exist, get commit obj, get tree hash, update index, clean work dir, rebuild work dir
+
+                    // get commit obj
+                    commit_t commit;
+                    char commit_path[128];
+                    snprintf(commit_path, sizeof(commit_path), "%s/%s", GIT_OBJECTS_DIR, commit_hash);
+                    if (stat(commit_path, &st) == -1) { exit(1); }
+                    read_func(commit_path, &commit, st.st_size);
+
+                    // get tree hash
+                    char tree_hash[HASH_LENGTH + 1];
+                    memset(tree_hash, 0, sizeof(tree_hash));
+                    memcpy(tree_hash, commit.tree_hash, strlen(commit.tree_hash));
 
                     // update index
-                    reset_index_from_tree(tree);
+                    rebuild_index_from_tree(tree_hash);
 
                     // clean work dir
                     clean_working_dir("./");

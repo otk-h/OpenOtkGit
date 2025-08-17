@@ -27,8 +27,8 @@ typedef struct index_entry {
     // uint32_t gid;
 
     uint32_t file_sz;
-    char hash[41];      // SHA-1 + '\0'
-    char path[64];      // TODO: fixed len
+    char hash[HASH_LENGTH + 1];      // SHA-1 + '\0'
+    char path[PATH_LENGTH];      // TODO: fixed len
     
 } index_entry_t;
 
@@ -37,7 +37,8 @@ typedef struct index {
     index_entry_t   entry[];
 } index_t;
 
-int get_index(index_t** index);
-int add_entry_to_index(const char* path, char* hash);
+void get_index(index_t** index);
+void update_index(index_t* index);
+void add_entry_to_index(const char* path, const char* hash, index_t** index);
 
 #endif

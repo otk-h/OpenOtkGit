@@ -5,12 +5,12 @@
 #include "ref.h"
 
 typedef struct commit {
-    char tree_hash[41];     // point to top tree obj
-    char parent_hash[4][41];// point to parent commit obj, TODO: limited parent
-    char parent_cnt;        // cnt of parent
+    char tree_hash[HASH_LENGTH + 1];     // point to top tree obj
+    char parent_hash[4][HASH_LENGTH + 1];// point to parent commit obj, TODO: limited parent
+    char parent_cnt;                     // cnt of parent
 
-    // char author[64];     // TODO: fixed len
-    char message[64];       // TODO: fixed len
+    // char author[64];                  // TODO: fixed len
+    char message[MESSAGE_LENGTH];        // TODO: fixed len
 
     // char* author_name;
     // char* author_email;
@@ -24,7 +24,7 @@ typedef struct commit {
 
 } commit_t;
 
-int set_parent_commit(commit_t* commit);
+void set_parent_commit(commit_t* commit);
 void create_commit(const char* message, const char* tree_hash, char* commit_hash);
 
 #endif

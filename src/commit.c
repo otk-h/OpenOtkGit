@@ -18,14 +18,14 @@ void create_commit(const char* message, const char* tree_hash, char* commit_hash
 
 }
 
-int set_parent_commit(commit_t* commit) {
+void set_parent_commit(commit_t* commit) {
     char branch_name[64];
     char branch_path[128];
     struct stat st;
     
-    if (get_cur_branch(branch_name) == 0) { return 0; }
+    get_cur_branch(branch_name);
     snprintf(branch_path, sizeof(branch_path), "%s/%s", GIT_REFS_HEADS_DIR, branch_name);
-    if (stat(branch_path, &st) == -1) { return 1; }
+    if (stat(branch_path, &st) == -1) { return; }
 
     char hash[HASH_LENGTH + 1];
     memset(hash, 0, sizeof(hash));
@@ -36,7 +36,5 @@ int set_parent_commit(commit_t* commit) {
 
     memcpy(commit->parent_hash[commit->parent_cnt], hash, strlen(hash));
     commit->parent_cnt += 1;
-    
-    return 1;
 
 }

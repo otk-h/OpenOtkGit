@@ -14,8 +14,8 @@ typedef struct tree_hdr {
 typedef struct tree_entry {
     // file or sub_dir
     mode_t mode;
-    char name[64];      // TODO: fixed len
-    char hash[41];      // SHA-1 str + '\0'
+    char name[PATH_LENGTH];     // TODO: fixed len
+    char hash[HASH_LENGTH + 1]; // SHA-1 str + '\0'
     
     // mode: oct #include <sys/stat.h>
     //      reg 0100644
@@ -30,9 +30,10 @@ typedef struct tree {
 
 void create_tree(index_t* index, const char* dir_path, char* hash);
 void create_tree_func(index_t* index, const char* dir_path, char* hash, int* is_processed);
+void add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t** tree);
 int is_file_in_dir(const char* path, const char* dir_path);
-int add_entry_to_tree(const char* name, const char* hash, struct stat st, tree_t** tree);
-int reset_index_from_tree(tree_t* tree);
-int rebuild_working_dir_from_tree(const char* base_path, tree_t* tree);
+void rebuild_index_from_tree(const char* tree_hash);
+void rebuild_index_from_tree_func(index_t** index, const char* tree_hash, const char* dir_path);
+void rebuild_working_dir_from_tree(const char* base_path, tree_t* tree);
 
 #endif

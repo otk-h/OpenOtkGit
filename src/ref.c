@@ -1,7 +1,7 @@
 #include "ref.h"
 
-int get_cur_branch(char* branch_name) {
-    if (branch_name == NULL) { return 0; }
+void get_cur_branch(char* branch_name) {
+    if (branch_name == NULL) { exit(1); }
 
     int fd = -1;
     fd = open(GIT_HEAD_PATH, O_RDONLY);
@@ -12,21 +12,18 @@ int get_cur_branch(char* branch_name) {
 
     memcpy(branch_name, buffer + strlen(DEFAULT_HEAD_STR), bytes_read - strlen(DEFAULT_HEAD_STR));
 
-    return 1;
 }
 
-int update_refs(char* hash) {
-    if (hash == NULL) { return 0; }
+void update_refs(char* hash) {
+    if (hash == NULL) { exit(1); }
 
     char branch_name[64];
     char branch_path[128];
     
-    if (get_cur_branch(branch_name) == 0) { return 0; }
+    get_cur_branch(branch_name);
     snprintf(branch_path, sizeof(branch_path), "%s/%s", GIT_REFS_HEADS_DIR, branch_name);
 
     write_func(branch_path, hash, strlen(hash));
-
-    return 1;
 
 }
 
@@ -62,9 +59,14 @@ int checkout_safe_check(const char* branch_name) {
     // TODO: check index commit
     printf("uncommitted file '%s' in index.\n", GIT_DIR);
     return 0;
+
     // TODO: check working dir untracked
     printf("untracked file '%s' in working dir", GIT_DIR);
     return 0;
+    
     // // TODO: check overwritten of untracked file
+    // printf("untracked file overwritten.\n");
+    // return 0;
+    
     return 1;
 }

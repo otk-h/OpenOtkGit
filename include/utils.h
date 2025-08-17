@@ -14,6 +14,7 @@
 // size
 #define HASH_LENGTH 40
 #define PATH_LENGTH 64
+#define MESSAGE_LENGTH 64
 
 // branch
 #define DEFAULT_BRANCH "master"
