@@ -114,7 +114,8 @@ void Git_Commit(int argc, char* argv[]) {
             case 'm':
                 message = optarg;
                 break;
-            default: 
+            default:
+                printf("inValid optarg.\n");
                 return;
         }
     }
@@ -172,7 +173,8 @@ void Git_Branch(int argc, char* argv[]) {
                     printf("branch %s removed.\n", branch_name);
                 }
                 return;
-            default: 
+            default:
+                printf("inValid optarg.\n");
                 return;
         }
     }
@@ -250,7 +252,8 @@ void Git_Checkout(int argc, char* argv[]) {
 
                 printf("Git_Checkout: from '%s' to '%s'.\n", cur_branch, branch_name);
                 return;
-            default: 
+            default:
+                printf("inValid optarg.\n");
                 return;
         }
     }
@@ -271,9 +274,60 @@ void Git_Log(int argc, char* argv[]) {
 }
 
 void Git_Merge(int argc, char* argv[]) {
-    printf("Git_Merge: \n\n");
+    if (argc < 2) { 
+        printf("Too few args.\n");
+        return;
+    } else if (is_Initialized() == 0) {
+        printf("Not initialized.\n");
+        return;
+    }
 
-    // TODO
+    merge_config_t config;
+    memset(&config, 0, sizeof(config));
+    config.target_branch = NULL;
+
+    int fd = -1;
+    int opt = -1;
+    if ((opt = getopt_long(argc, argv, "o:c:f:", merge_options, NULL)) != -1) {
+        switch (opt) {
+            case 'o':
+                config.ff_only = 1;
+                config.target_branch = optarg;
+                break;
+            case 'c':
+                config.no_commit = 1;
+                config.target_branch = optarg;
+                break;
+            case 'f':
+                config.no_ff = 1;
+                config.target_branch = optarg;
+                break;
+            default:
+                printf("inValid optarg.\n");
+                return;
+        }
+    }
+
+    if (config.target_branch == NULL) {
+        printf("Target branch not specified.\n");
+        return;
+    }
+
+    char branch[64];
+    char base[64];
+    get_cur_branch(branch);
+    find_common_base(branch, config.target_branch, base);
+    
+    // cmp base & cur (ours)
+    // cmp base & target (theirs)
+
+    // no confilct, create new merge commit, include 2 parent commit
+    // conflict, flag conflict file, wait for user to resolve
+
+    // create merge commit:
+    // record 2 parent commit
+
+
 }
 
 void Git_Rebase(int argc, char* argv[]) {

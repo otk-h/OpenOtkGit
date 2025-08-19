@@ -70,3 +70,12 @@ int checkout_safe_check(const char* branch_name) {
     
     return 1;
 }
+
+void find_common_base(const char* branch1, const char* branch2, char* base) {
+    if (branch1 == NULL || branch2 == NULL || base == NULL) { printf("empty mem.\n"); exit(1); }
+
+    // TODO: get commit
+    // TODO: find all base of 2 commit
+    // TODO: 2 for () { strcmp }
+
+}

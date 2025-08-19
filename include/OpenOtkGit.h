@@ -88,6 +88,9 @@ static struct option checkout_options[] = {
 };
 
 static struct option merge_options[] = {
+    {"ff-only",   required_argument, 0, 'o'},
+    {"no-commit", required_argument, 0, 'c'},
+    {"no-ff",     required_argument, 0, 'f'},
     {0, 0, 0, 0}
 };
 
