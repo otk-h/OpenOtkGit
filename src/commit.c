@@ -38,3 +38,19 @@ void set_parent_commit(commit_t* commit) {
     commit->parent_cnt += 1;
 
 }
+
+void get_tree_hash(const char* commit_hash, char* tree_hash) {
+    if (commit_hash == NULL || tree_hash == NULL) {
+        printf("empty get tree hash.\n");
+        exit(1);
+    }
+
+    char commit_path[128];
+    snprintf(commit_path, sizeof(commit_path), "%s/%s", GIT_OBJECTS_DIR, commit_hash);
+    commit_t commit;
+    memset(&commit, 0, sizeof(commit));
+    read_func(commit_path, &commit, sizeof(commit));
+
+    memcpy(tree_hash, commit.tree_hash, strlen(commit.tree_hash));
+
+}

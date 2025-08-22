@@ -6,7 +6,7 @@
 
 typedef struct commit {
     char tree_hash[HASH_LENGTH + 1];     // point to top tree obj
-    char parent_hash[4][HASH_LENGTH + 1];// point to parent commit obj, TODO: limited parent
+    char parent_hash[3][HASH_LENGTH + 1];// point to parent commit obj, TODO: limited parent
     char parent_cnt;                     // cnt of parent
 
     // char author[64];                  // TODO: fixed len
@@ -26,5 +26,6 @@ typedef struct commit {
 
 void set_parent_commit(commit_t* commit);
 void create_commit(const char* message, const char* tree_hash, char* commit_hash);
+void get_tree_hash(const char* commit_hash, char* tree_hash);
 
 #endif

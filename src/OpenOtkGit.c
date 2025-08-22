@@ -209,8 +209,10 @@ void Git_Checkout(int argc, char* argv[]) {
                 // if (checkout_safe_check(branch_name) == 0) { return; }
                 
                 // get commit hash
+                char branch[64];
                 char commit_hash[41];
-                get_commit_hash(commit_hash);
+                get_cur_branch(branch);
+                get_commit_hash(branch, commit_hash);
 
                 // get target branch path
                 char branch_path[128];
@@ -314,10 +316,25 @@ void Git_Merge(int argc, char* argv[]) {
     }
 
     char branch[64];
-    char base[64];
     get_cur_branch(branch);
-    find_common_base(branch, config.target_branch, base);
+    char branch1_commit[41];
+    char branch2_commit[41];
+    get_commit_hash(branch, branch1_commit);
+    get_commit_hash(config.target_branch, branch2_commit);
+
+    char base[41];
+    find_common_base(branch1_commit, branch2_commit, base);
     
+    char base_tree_hash[41];
+    char branch1_tree_hash[41];
+    char branch2_tree_hash[41];
+    get_tree_hash(base, base_tree_hash);
+    get_tree_hash(branch1_commit, branch1_tree_hash);
+    get_tree_hash(branch2_commit, branch2_tree_hash);
+
+    three_way_merge(base_tree_hash, branch1_tree_hash, branch2_tree_hash);
+
+
     // cmp base & cur (ours)
     // cmp base & target (theirs)
 

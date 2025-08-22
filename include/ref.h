@@ -25,9 +25,11 @@ typedef struct merge_config {
 
 void get_cur_branch(char* branch_name);
 void update_refs(char* hash);
-int get_commit_hash(char* hash);
-int is_detached();
+void get_commit_hash(const char* branch, char* hash);
+// int is_detached();
 int checkout_safe_check(const char* branch_name);
 void find_common_base(const char* branch1, const char* branch2, char* base);
+void find_all_base(const char* commit, char base[][41], int* cnt);
+void three_way_merge(const char* base_tree_hash, const char* branch1_tree_hash, const char* branch2_tree_hash);
 
 #endif
